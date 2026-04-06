@@ -1,0 +1,133 @@
+/* --- 1. DESIGN TOKENS (Variables) --- */
+:root {
+    --colorBackground: #f4f4f5;
+    --colorCard: #ffffff;
+    --colorText: #18181b;
+    --colorTextLight: #71717a;
+    --colorPrimary: #27272a;
+    --colorBorder: #e4e4e7;
+
+    --spacingSm: 0.5rem;
+    --spacingMd: 1.5rem;
+    --spacingLg: 3rem;
+    --borderRadius: 6px;
+}
+
+/* --- 2. RESET & BASE --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, sans-serif;
+    background-color: var(--colorBackground);
+    color: var(--colorText);
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 var(--spacingMd);
+}
+
+/* --- 3. NAVEGACIÓN (header.php) --- */
+.main-nav {
+    background-color: var(--colorCard);
+    border-bottom: 1px solid var(--colorBorder);
+    padding: var(--spacingSm) 0;
+    margin-bottom: var(--spacingLg);
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: var(--spacingMd);
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--colorText);
+    font-weight: 500;
+}
+
+/* --- 4. BOTONES --- */
+.btn-primary {
+    background-color: var(--colorPrimary);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--borderRadius);
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+/* --- 5. GRID DE EVENTOS (index.php) --- */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacingMd);
+    margin-bottom: var(--spacingLg);
+}
+
+.event-card {
+    background-color: var(--colorCard);
+    border: 1px solid var(--colorBorder);
+    border-radius: var(--borderRadius);
+    padding: var(--spacingMd);
+}
+
+.event-card h3 {
+    margin-bottom: var(--spacingSm);
+}
+
+.event-meta {
+    color: var(--colorTextLight);
+    font-size: 0.85rem;
+    margin-bottom: var(--spacingMd);
+}
+
+/* --- 6. FORMULARIOS (register.php / login.php) --- */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spacingLg);
+}
+
+.auth-card {
+    background-color: var(--colorCard);
+    border: 1px solid var(--colorBorder);
+    border-radius: var(--borderRadius);
+    padding: var(--spacingLg);
+    width: 100%;
+    max-width: 400px;
+}
+
+.form-layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacingMd);
+    margin-top: var(--spacingMd);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.form-group input {
+    padding: 0.6rem;
+    border: 1px solid var(--colorBorder);
+    border-radius: 4px;
+}

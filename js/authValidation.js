@@ -39,7 +39,7 @@ function handlerReisterSubmit(event) {
     }
 
 
-    if (!isPasswordSecure(password)) {
+    if (!isPasswordSecure(passwordInput)) {
         document.getElementById('errorUserPassword').textContent = 'Contraseña de al menos 8 caracteres';
         hasError = true;
     }
