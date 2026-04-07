@@ -8,17 +8,16 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  */
 
 function isValidEmail(email) {
-    return EMAIL_REGEX(email);
+    return EMAIL_REGEX.test(email);
 }
 
 /**
-* Valida que la contraseña cumpla con los requisitos mínimos de seguridad.
-* * @param {string} password - La contraseña introducida.
-* @returns {boolean} True si es válida, false en caso contrario.
-*/
-
+ * Valida que la contraseña cumpla con los requisitos mínimos de seguridad.
+ * @param {string} password - La contraseña introducida.
+ * @returns {boolean} True si es válida, false en caso contrario.
+ */
 function isPasswordSecure(password) {
-    return password.length <= MIN_PASSWORD_LENGTH;
+    return password.length >= MIN_PASSWORD_LENGTH;
 }
 
 /**
@@ -27,20 +26,24 @@ function isPasswordSecure(password) {
 * * @param {Event} event - El evento de envío del formulario.
 */
 
-function handlerReisterSubmit(event) {
-    const emailInput = document.getElementById('userEmail').value;
-    const passwrodImput = document.getElementById('userPassword').value;
+function handleRegisterSubmit(event) {
+    const emailInput = document.getElementById('userEmail');
+    const passwordInput = document.getElementById('userPassword');
+    const emailError = document.getElementById('errorUserEmail');
+    const passwordError = document.getElementById('errorUserPassword');
+
+    emailError.textContent = '';
+    passwordError.textContent = '';
 
     let hasError = false;
 
-    if (!isValidEmail(email)) {
-        document.getElementById('errorUserEmail').textContent = 'Formato de mail incorrecto';
+    if (!isValidEmail(emailInput.value.trim())) {
+        emailError.textContent = 'Formato de correo electrónico incorrecto.';
         hasError = true;
     }
 
-
-    if (!isPasswordSecure(passwordInput)) {
-        document.getElementById('errorUserPassword').textContent = 'Contraseña de al menos 8 caracteres';
+    if (!isPasswordSecure(passwordInput.value)) {
+        passwordError.textContent = 'La contraseña debe tener al menos 8 caracteres.';
         hasError = true;
     }
 
@@ -49,8 +52,7 @@ function handlerReisterSubmit(event) {
     }
 }
 
-const reisterForm = document.getElementById('registerForm');
-
+const registerForm = document.getElementById('registerForm');
 if (registerForm) {
-    registerForm, addEventListener('submit', handlerReisterSubmit)
+    registerForm.addEventListener('submit', handleRegisterSubmit);
 }
