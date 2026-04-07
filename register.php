@@ -6,6 +6,14 @@ require_once 'includes/header.php';
 <section class="auth-card">
     <h2>Registro de Usuario</h2>
     <p>Crea tu cuenta para gestionar y reservar eventos locales.</p>
+
+    <?php if (!empty($_GET['error'])): ?>
+        <div class="alert alert-error"><?php echo htmlspecialchars($_GET['error']); ?></div>
+    <?php endif; ?>
+
+    <?php if (!empty($_GET['success'])): ?>
+        <div class="alert alert-success"><?php echo htmlspecialchars($_GET['success']); ?></div>
+    <?php endif; ?>
     
     <form id="registerForm" action="backend/process_register.php" method="POST" class="form-layout">
         <div class="form-group">

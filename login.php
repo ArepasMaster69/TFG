@@ -8,6 +8,13 @@ require_once 'includes/header.php';
         <h2 style="text-align: center; margin-bottom: var(--spacingSm);">Iniciar Sesión</h2>
         <p style="text-align: center; color: var(--colorTextLight); margin-bottom: var(--spacingLg);">Accede a tu panel de control.</p>
         
+        <?php if (!empty($_GET['error'])): ?>
+            <div class="alert alert-error"><?php echo htmlspecialchars($_GET['error']); ?></div>
+        <?php endif; ?>
+        <?php if (!empty($_GET['success'])): ?>
+            <div class="alert alert-success"><?php echo htmlspecialchars($_GET['success']); ?></div>
+        <?php endif; ?>
+
         <form id="loginForm" action="backend/process_login.php" method="POST" class="form-layout">
             <div class="form-group">
                 <label for="loginEmail">Correo Electrónico</label>
