@@ -38,6 +38,8 @@ if (!empty($event['event_date'])) {
 }
 ?>
 
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
 <div class="container" style="margin-top: var(--spacingLg); margin-bottom: var(--spacingLg);">
     <section class="auth-card form-card">
         <h2><?php echo $formTitle; ?></h2>
@@ -45,11 +47,8 @@ if (!empty($event['event_date'])) {
         <?php if (!empty($_GET['error'])): ?>
             <div class="alert alert-error"><?php echo htmlspecialchars($_GET['error']); ?></div>
         <?php endif; ?>
-        <?php if (!empty($_GET['success'])): ?>
-            <div class="alert alert-success"><?php echo htmlspecialchars($_GET['success']); ?></div>
-        <?php endif; ?>
 
-        <form action="backend/process_event.php" method="POST" class="form-layout">
+        <form action="backend/process_event.php" method="POST" id="eventForm" class="form-layout">
             <input type="hidden" name="action" value="<?php echo $action; ?>">
             <?php if ($action === 'edit'): ?>
                 <input type="hidden" name="event_id" value="<?php echo (int) $event['id']; ?>">
@@ -61,8 +60,11 @@ if (!empty($event['event_date'])) {
             </div>
 
             <div class="form-group">
-                <label for="description">Descripción</label>
-                <textarea id="description" name="description" rows="5" required><?php echo htmlspecialchars($event['description']); ?></textarea>
+                <label for="description">Descripción detallada</label>
+                <div id="quill-editor" style="height: 200px; background-color: #fff; border: 1px solid var(--colorBorder); border-radius: 4px;">
+                    <?php echo $event['description'];  ?>
+                </div>
+                <input type="hidden" name="description" id="hiddenDescription">
             </div>
 
             <div class="form-group">
@@ -87,5 +89,42 @@ if (!empty($event['event_date'])) {
         </form>
     </section>
 </div>
+
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script>
+    var quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        placeholder: 'Describe el evento, horarios, requisitos...',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['clean']
+            ]
+        }
+    });
+
+    //  Sincronizar y validar antes de enviar
+    var form = document.getElementById('eventForm');
+    form.addEventListener('submit', function(e) {
+        var description = document.querySelector('#hiddenDescription');
+        
+        description.value = quill.root.innerHTML;
+
+        // Validación: 
+        if (quill.getText().trim().length === 0) {
+            e.preventDefault();
+            alert('La descripción del evento no puede estar vacía.');
+            return;
+        }
+
+        // Validación:
+        var dateInput = document.getElementById('event_date').value;
+        if (new Date(dateInput) < new Date()) {
+            e.preventDefault();
+            alert('La fecha del evento debe ser en el futuro.');
+        }
+    });
+</script>
 
 <?php require_once 'includes/footer.php'; ?>
