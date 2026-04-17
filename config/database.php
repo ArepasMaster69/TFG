@@ -19,9 +19,9 @@ function getDatabaseConnection() {
     try {
         $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
         $options = [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Lanza excepciones en caso de error
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,       // Devuelve arrays asociativos limpios
-            PDO::ATTR_EMULATE_PREPARES   => false,                  // Seguridad extra contra inyecciones SQL
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, 
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,       
+            PDO::ATTR_EMULATE_PREPARES   => false,                  
         ];
         
         $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
@@ -29,8 +29,7 @@ function getDatabaseConnection() {
         return $pdo;
         
     } catch (PDOException $error) {
-        // En un entorno profesional no mostraríamos el error exacto al usuario,
-        // pero para el desarrollo del TFG local es vital para que Jorge pueda depurar.
+        
         die("Database connection failed. Please check your configuration.");
     }
 }
