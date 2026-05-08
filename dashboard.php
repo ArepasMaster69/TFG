@@ -12,7 +12,8 @@ $db = getDatabaseConnection();
 $userId = $_SESSION['user_id'];
 $userName = htmlspecialchars($_SESSION['user_name'] ?? 'Usuario');
 
-$resLabelStmt = $db->prepare('SELECT e.id, e.title, e.venue, e.event_date, e.available_seats, r.id AS reservation_id FROM reservations r JOIN events e ON e.id = r.event_id WHERE r.user_id = :user_id ORDER BY e.event_date ASC');
+// Modificado para recuperar el número de plazas (r.seats)
+$resLabelStmt = $db->prepare('SELECT e.id, e.title, e.venue, e.event_date, e.available_seats, r.id AS reservation_id, r.seats FROM reservations r JOIN events e ON e.id = r.event_id WHERE r.user_id = :user_id ORDER BY e.event_date ASC');
 $resLabelStmt->execute([':user_id' => $userId]);
 $reservations = $resLabelStmt->fetchAll();
 
@@ -47,9 +48,9 @@ $events = $eventsStmt->fetchAll();
         <?php else: ?>
             <div class="events-grid">
                 <?php foreach ($reservations as $event): ?>
-                    <article class="event-card" style="border: 1px solid var(--colorSuccessBorder);">
+                    <article class="event-card" style="border: 1px solid var(--colorSuccessBg);">
                         <div style="margin-bottom: 1rem;">
-                            <span class="pill success">✓ Confirmado</span>
+                            <span class="pill success">✓ Confirmado (<?php echo $event['seats']; ?> plazas)</span>
                         </div>
                         <h3><?php echo htmlspecialchars($event['title']); ?></h3>
                         <p class="event-meta"><?php echo htmlspecialchars($event['venue']); ?> · <?php echo date('d/m/Y H:i', strtotime($event['event_date'])); ?></p>
@@ -93,11 +94,7 @@ $events = $eventsStmt->fetchAll();
                         
                         <div class="card-footer">
                             <span style="font-weight: 700; color: var(--colorBrand);"><?php echo (int) $event['available_seats']; ?> plazas libres</span>
-                            <form action="backend/process_reservation.php" method="POST" style="margin: 0;">
-                                <input type="hidden" name="action" value="reserve">
-                                <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
-                                <button type="submit" class="btn-primary" style="padding: 0.4rem 1rem;">Reservar</button>
-                            </form>
+                            <a href="event.php?id=<?php echo $event['id']; ?>" class="btn-primary" style="padding: 0.4rem 1rem;">Ver detalles</a>
                         </div>
                     </article>
                 <?php endforeach; ?>
@@ -105,7 +102,5 @@ $events = $eventsStmt->fetchAll();
         <?php endif; ?>
     </section>
 </div>
-
-<script src="js/main.js"></script>
 
 <?php require_once 'includes/footer.php'; ?>

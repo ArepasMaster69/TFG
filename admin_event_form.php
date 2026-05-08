@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'Administración de Eventos - Eventos Locales';
+$pageTitle = 'Administración de Eventos - PortalEventos';
 require_once 'includes/header.php';
 require_once 'config/database.php';
 
@@ -44,11 +44,7 @@ if (!empty($event['event_date'])) {
     <section class="auth-card form-card">
         <h2><?php echo $formTitle; ?></h2>
 
-        <?php if (!empty($_GET['error'])): ?>
-            <div class="alert alert-error"><?php echo htmlspecialchars($_GET['error']); ?></div>
-        <?php endif; ?>
-
-        <form action="backend/process_event.php" method="POST" id="eventForm" class="form-layout">
+        <form action="backend/process_event.php" method="POST" id="eventForm" class="form-layout" style="margin-top: 2rem;">
             <input type="hidden" name="action" value="<?php echo $action; ?>">
             <?php if ($action === 'edit'): ?>
                 <input type="hidden" name="event_id" value="<?php echo (int) $event['id']; ?>">
@@ -61,7 +57,7 @@ if (!empty($event['event_date'])) {
 
             <div class="form-group">
                 <label for="description">Descripción detallada</label>
-                <div id="quill-editor" style="height: 200px; background-color: #fff; border: 1px solid var(--colorBorder); border-radius: 4px;">
+                <div id="quill-editor" style="height: 200px;">
                     <?php echo $event['description'];  ?>
                 </div>
                 <input type="hidden" name="description" id="hiddenDescription">
@@ -82,9 +78,9 @@ if (!empty($event['event_date'])) {
                 <input type="number" id="total_seats" name="total_seats" min="1" value="<?php echo htmlspecialchars($event['total_seats']); ?>" required>
             </div>
 
-            <div class="form-actions">
-                <button type="submit" class="btn-primary"><?php echo $submitLabel; ?></button>
+            <div class="form-actions" style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: flex-end;">
                 <a href="admin.php" class="btn-secondary">Cancelar</a>
+                <button type="submit" class="btn-primary" id="btnSubmitEvent"><?php echo $submitLabel; ?></button>
             </div>
         </form>
     </section>
@@ -104,25 +100,22 @@ if (!empty($event['event_date'])) {
         }
     });
 
-    //  Sincronizar y validar antes de enviar
     var form = document.getElementById('eventForm');
     form.addEventListener('submit', function(e) {
         var description = document.querySelector('#hiddenDescription');
-        
         description.value = quill.root.innerHTML;
 
-        // Validación: 
         if (quill.getText().trim().length === 0) {
             e.preventDefault();
-            alert('La descripción del evento no puede estar vacía.');
+            showToast('La descripción del evento no puede estar vacía.', 'error');
             return;
         }
 
-        // Validación:
         var dateInput = document.getElementById('event_date').value;
         if (new Date(dateInput) < new Date()) {
             e.preventDefault();
-            alert('La fecha del evento debe ser en el futuro.');
+            showToast('La fecha del evento debe ser en el futuro.', 'error');
+            return;
         }
     });
 </script>

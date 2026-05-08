@@ -24,26 +24,19 @@ $totalSeats = (int) ($_POST['total_seats'] ?? 0);
 
 $errors = [];
 
-if ($title === '') {
-    $errors[] = 'El título es obligatorio.';
-}
-if ($description === '') {
-    $errors[] = 'La descripción es obligatoria.';
-}
-if ($venue === '') {
-    $errors[] = 'El lugar es obligatorio.';
-}
-if ($eventDate === '') {
-    $errors[] = 'La fecha y hora son obligatorias.';
-}
-if ($totalSeats <= 0) {
-    $errors[] = 'Las plazas totales deben ser un número positivo.';
-}
+// Solo validamos los campos de texto si estamos creando o editando.
+if ($action === 'create' || $action === 'edit') {
+    if ($title === '') { $errors[] = 'El título es obligatorio.'; }
+    if ($description === '') { $errors[] = 'La descripción es obligatoria.'; }
+    if ($venue === '') { $errors[] = 'El lugar es obligatorio.'; }
+    if ($eventDate === '') { $errors[] = 'La fecha y hora son obligatorias.'; }
+    if ($totalSeats <= 0) { $errors[] = 'Las plazas totales deben ser un número positivo.'; }
 
-if (!empty($errors)) {
-    $query = http_build_query(['error' => implode(' ', $errors)]);
-    header('Location: ../admin_event_form.php?action=' . urlencode($action) . '&' . $query . (isset($_POST['event_id']) ? '&id=' . (int) $_POST['event_id'] : ''));
-    exit;
+    if (!empty($errors)) {
+        $query = http_build_query(['error' => implode(' ', $errors)]);
+        header('Location: ../admin_event_form.php?action=' . urlencode($action) . '&' . $query . (isset($_POST['event_id']) ? '&id=' . (int) $_POST['event_id'] : ''));
+        exit;
+    }
 }
 
 try {
@@ -59,7 +52,6 @@ try {
             ':total_seats' => $totalSeats,
             ':available_seats' => $totalSeats,
         ]);
-
         header('Location: ../admin.php?success=' . urlencode('Evento creado correctamente.'));
         exit;
     }
@@ -77,7 +69,7 @@ try {
 
         $reservedCount = $existingEvent['total_seats'] - $existingEvent['available_seats'];
         if ($totalSeats < $reservedCount) {
-            header('Location: ../admin_event_form.php?action=edit&id=' . $eventId . '&error=' . urlencode('No se puede reducir las plazas totales por debajo de las reservas existentes.'));
+            header('Location: ../admin_event_form.php?action=edit&id=' . $eventId . '&error=' . urlencode('No se puede reducir las plazas por debajo de las reservas existentes.'));
             exit;
         }
 
@@ -92,7 +84,6 @@ try {
             ':available_seats' => $newAvailable,
             ':id' => $eventId,
         ]);
-
         header('Location: ../admin.php?success=' . urlencode('Evento actualizado correctamente.'));
         exit;
     }
@@ -100,7 +91,6 @@ try {
     if ($action === 'delete' && !empty($_POST['event_id'])) {
         $deleteStmt = $db->prepare('DELETE FROM events WHERE id = :id');
         $deleteStmt->execute([':id' => (int) $_POST['event_id']]);
-
         header('Location: ../admin.php?success=' . urlencode('Evento eliminado correctamente.'));
         exit;
     }

@@ -26,13 +26,6 @@ $events = $stmt->fetchAll();
         </div>
     </header>
 
-    <?php if (!empty($_GET['success'])): ?>
-        <div class="alert alert-success"><?php echo htmlspecialchars($_GET['success']); ?></div>
-    <?php endif; ?>
-    <?php if (!empty($_GET['error'])): ?>
-        <div class="alert alert-error"><?php echo htmlspecialchars($_GET['error']); ?></div>
-    <?php endif; ?>
-
     <?php if (empty($events)): ?>
         <div class="empty-state">
             <p>No hay eventos registrados aún. Comienza creando uno nuevo.</p>
@@ -60,10 +53,11 @@ $events = $stmt->fetchAll();
                             <td><?php echo (int) $event['available_seats']; ?></td>
                             <td class="admin-actions">
                                 <a href="admin_event_form.php?action=edit&id=<?php echo $event['id']; ?>" class="btn-secondary">Editar</a>
-                                <form action="backend/process_event.php" method="POST" onsubmit="return confirm('¿Eliminar este evento?');">
+                                
+                                <form id="deleteForm_<?php echo $event['id']; ?>" action="backend/process_event.php" method="POST">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
-                                    <button type="submit" class="btn-danger">Eliminar</button>
+                                    <button type="button" class="btn-danger" onclick="openDeleteModal('deleteForm_<?php echo $event['id']; ?>')">Eliminar</button>
                                 </form>
                             </td>
                         </tr>
@@ -72,6 +66,21 @@ $events = $stmt->fetchAll();
             </table>
         </div>
     <?php endif; ?>
+</div>
+
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirmar Eliminación</h3>
+        </div>
+        <div class="modal-body">
+            <p>¿Estás seguro de que deseas eliminar este evento? Esta acción borrará permanentemente los datos y las reservas asociadas.</p>
+        </div>
+        <div class="modal-footer form-actions">
+            <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Cancelar</button>
+            <button type="button" class="btn-danger" id="confirmDeleteBtn">Sí, eliminar</button>
+        </div>
+    </div>
 </div>
 
 <?php require_once 'includes/footer.php'; ?>
