@@ -11,15 +11,16 @@ $currentUserRole = $_SESSION['user_role'] ?? 'usuario';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($pageTitle) ? htmlspecialchars($pageTitle) : 'Civitas - Plataforma Ciudadana'; ?></title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title><?php echo isset($pageTitle) ? htmlspecialchars($pageTitle) : 'PortalEventos - Plataforma Ciudadana'; ?></title>
+    <link rel="stylesheet" href="css/styles.css?v=<?php echo time(); ?>">
 </head>
 <body>
     <nav class="main-nav">
         <div class="container nav-content">
             <div class="logo">
                 <a href="index.php" style="text-decoration: none;">
-                    <h2>PortalEventos</h2> </a>
+                    <h2>PortalEventos</h2>
+                </a>
             </div>
             
             <ul class="nav-links">

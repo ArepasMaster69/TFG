@@ -1,20 +1,13 @@
 <?php
 /**
  * Database configuration and connection setup.
- * Uses PDO for secure database interactions to prevent SQL injection.
  */
 
-// Constantes de configuración (Cero valores mágicos)
-// Jorge deberá modificar estos valores si la base de datos tiene contraseña en su XAMPP
 const DB_HOST = 'localhost';
 const DB_NAME = 'tfg_eventos';
 const DB_USER = 'root'; 
 const DB_PASS = '';     
 
-/**
- * Retrieves a secure PDO database connection.
- * * @returns {PDO} The active database connection instance.
- */
 function getDatabaseConnection() {
     try {
         $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
@@ -29,7 +22,6 @@ function getDatabaseConnection() {
         return $pdo;
         
     } catch (PDOException $error) {
-        
         die("Database connection failed. Please check your configuration.");
     }
 }
@@ -64,6 +56,7 @@ function initializeDatabaseSchema(PDO $db) {
             id INT AUTO_INCREMENT PRIMARY KEY,
             user_id INT NOT NULL,
             event_id INT NOT NULL,
+            seats INT NOT NULL DEFAULT 1,
             reserved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE KEY unique_reservation (user_id, event_id),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,

@@ -10,7 +10,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] ?? 'usuario') !== 'usuario') {
+// Ahora permitimos que tanto 'usuario' como 'admin' procesen reservas
+if (!isset($_SESSION['user_id'])) {
     header('Location: ../login.php');
     exit;
 }
@@ -18,41 +19,47 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] ?? 'usuario') !== 'u
 $action = $_POST['action'] ?? '';
 $userId = $_SESSION['user_id'];
 $eventId = (int) ($_POST['event_id'] ?? 0);
+$seats = (int) ($_POST['seats'] ?? 1); // Capturamos las plazas solicitadas
 
 try {
     $db = getDatabaseConnection();
 
     if ($action === 'reserve') {
+        if ($seats <= 0) {
+            header('Location: ../event.php?id=' . $eventId . '&error=' . urlencode('Debes reservar al menos 1 plaza.'));
+            exit;
+        }
+
         $eventStmt = $db->prepare('SELECT available_seats FROM events WHERE id = :id');
         $eventStmt->execute([':id' => $eventId]);
         $event = $eventStmt->fetch();
 
-        if (!$event || $event['available_seats'] <= 0) {
-            header('Location: ../event.php?id=' . $eventId . '&error=' . urlencode('No hay plazas disponibles.'));
+        if (!$event || $event['available_seats'] < $seats) {
+            header('Location: ../event.php?id=' . $eventId . '&error=' . urlencode('No hay suficientes plazas disponibles.'));
             exit;
         }
 
         $checkStmt = $db->prepare('SELECT id FROM reservations WHERE user_id = :user_id AND event_id = :event_id');
         $checkStmt->execute([':user_id' => $userId, ':event_id' => $eventId]);
         if ($checkStmt->fetch()) {
-            header('Location: ../dashboard.php?error=' . urlencode('Ya has reservado este evento.'));
+            header('Location: ../dashboard.php?error=' . urlencode('Ya tienes una reserva para este evento.'));
             exit;
         }
 
         $db->beginTransaction();
-        $insertStmt = $db->prepare('INSERT INTO reservations (user_id, event_id) VALUES (:user_id, :event_id)');
-        $insertStmt->execute([':user_id' => $userId, ':event_id' => $eventId]);
+        $insertStmt = $db->prepare('INSERT INTO reservations (user_id, event_id, seats) VALUES (:user_id, :event_id, :seats)');
+        $insertStmt->execute([':user_id' => $userId, ':event_id' => $eventId, ':seats' => $seats]);
 
-        $updateStmt = $db->prepare('UPDATE events SET available_seats = available_seats - 1 WHERE id = :id');
-        $updateStmt->execute([':id' => $eventId]);
+        $updateStmt = $db->prepare('UPDATE events SET available_seats = available_seats - :seats WHERE id = :id');
+        $updateStmt->execute([':seats' => $seats, ':id' => $eventId]);
         $db->commit();
 
-        header('Location: ../dashboard.php?success=' . urlencode('Reserva realizada con éxito.'));
+        header('Location: ../dashboard.php?success=' . urlencode("Reserva de $seats plaza(s) realizada con éxito."));
         exit;
     }
 
     if ($action === 'cancel') {
-        $reservationStmt = $db->prepare('SELECT id FROM reservations WHERE user_id = :user_id AND event_id = :event_id');
+        $reservationStmt = $db->prepare('SELECT id, seats FROM reservations WHERE user_id = :user_id AND event_id = :event_id');
         $reservationStmt->execute([':user_id' => $userId, ':event_id' => $eventId]);
         $reservation = $reservationStmt->fetch();
 
@@ -61,12 +68,14 @@ try {
             exit;
         }
 
+        $seatsToRestore = (int) $reservation['seats'];
+
         $db->beginTransaction();
         $deleteStmt = $db->prepare('DELETE FROM reservations WHERE id = :id');
         $deleteStmt->execute([':id' => $reservation['id']]);
 
-        $updateStmt = $db->prepare('UPDATE events SET available_seats = available_seats + 1 WHERE id = :id');
-        $updateStmt->execute([':id' => $eventId]);
+        $updateStmt = $db->prepare('UPDATE events SET available_seats = available_seats + :seats WHERE id = :id');
+        $updateStmt->execute([':seats' => $seatsToRestore, ':id' => $eventId]);
         $db->commit();
 
         header('Location: ../dashboard.php?success=' . urlencode('Reserva cancelada correctamente.'));
