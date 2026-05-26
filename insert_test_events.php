@@ -17,7 +17,7 @@ $testEvents = [
         'description' => 'Ven a la feria del libro y descubre nuevas lecturas.',
         'venue' => 'Plaza Central',
         'event_date' => '2024-06-10 10:00:00',
-        'total_seats' => 0, // Sin límite de plazas
+        'total_seats' => 0, 
         'available_seats' => 0
     ],
     [

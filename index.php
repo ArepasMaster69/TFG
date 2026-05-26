@@ -20,8 +20,8 @@ $events = $stmt->fetchAll();
             <h1>Descubre y reserva las mejores actividades culturales</h1>
             <p>Conectamos a los ayuntamientos y ciudadanos en un solo lugar. Regístrate gratis para asegurar tu plaza en eventos exclusivos.</p>
             <div class="hero-actions">
-                <a href="register.php" class="btn-primary" style="background-color: #ffffff; color: var(--colorBrand);">Crear cuenta</a>
-                <a href="login.php" class="btn-primary" style="background-color: transparent; border: 1px solid rgba(255,255,255,0.5);">Iniciar sesión</a>
+                <a href="register.php" class="btn-primary btn-white">Crear cuenta</a>
+                <a href="login.php" class="btn-secondary btn-outline-light">Iniciar sesión</a>
             </div>
         <?php endif; ?>
     </div>

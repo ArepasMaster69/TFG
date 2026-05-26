@@ -52,14 +52,16 @@ $events = $stmt->fetchAll();
                             <td><?php echo (int) $event['total_seats']; ?></td>
                             <td><?php echo (int) $event['available_seats']; ?></td>
                             <td class="admin-actions">
-                                <a href="admin_event_form.php?action=edit&id=<?php echo $event['id']; ?>" class="btn-secondary">Editar</a>
-                                
-                                <form id="deleteForm_<?php echo $event['id']; ?>" action="backend/process_event.php" method="POST">
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
-                                    <button type="button" class="btn-danger" onclick="openDeleteModal('deleteForm_<?php echo $event['id']; ?>')">Eliminar</button>
-                                </form>
-                            </td>
+    <a href="admin_reservations.php?id=<?php echo $event['id']; ?>" class="btn-secondary" style="border-color: var(--colorBrand); color: var(--colorBrand) !important;">Ver Reservas</a>
+    
+    <a href="admin_event_form.php?action=edit&id=<?php echo $event['id']; ?>" class="btn-secondary">Editar</a>
+    
+    <form id="deleteForm_<?php echo $event['id']; ?>" action="backend/process_event.php" method="POST" style="margin: 0;">
+        <input type="hidden" name="action" value="delete">
+        <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
+        <button type="button" class="btn-danger" onclick="openDeleteModal('deleteForm_<?php echo $event['id']; ?>')">Eliminar</button>
+    </form>
+</td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
