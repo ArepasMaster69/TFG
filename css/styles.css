@@ -87,7 +87,7 @@ body {
     padding: 0;
 }
 
-/* Matamos el punto rebelde de la lista */
+/* Punto de la lista */
 .nav-links li {
     list-style-type: none;
     margin: 0;
@@ -591,4 +591,28 @@ body {
         flex-direction: column;
         align-items: stretch;
     }
+}
+
+
+/*  BOTONES ESPECIALES DEL HERO */
+.btn-white {
+    background-color: #ffffff !important;
+    color: var(--colorBrand) !important;
+}
+
+.btn-white:hover {
+    background-color: #f8fafc !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+.btn-outline-light {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+.btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-color: #ffffff !important;
 }

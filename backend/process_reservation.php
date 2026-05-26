@@ -10,7 +10,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Ahora permitimos que tanto 'usuario' como 'admin' procesen reservas
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../login.php');
     exit;
@@ -19,7 +18,7 @@ if (!isset($_SESSION['user_id'])) {
 $action = $_POST['action'] ?? '';
 $userId = $_SESSION['user_id'];
 $eventId = (int) ($_POST['event_id'] ?? 0);
-$seats = (int) ($_POST['seats'] ?? 1); // Capturamos las plazas solicitadas
+$seats = (int) ($_POST['seats'] ?? 1); 
 
 try {
     $db = getDatabaseConnection();
