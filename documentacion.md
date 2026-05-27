@@ -50,3 +50,31 @@ Durante el desarrollo nos dimos cuenta de algunas cosas que mejoraban la experie
 * **Control de errores de sesión:** Si intentas ir por la URL a `admin.php` siendo un usuario normal, el sistema te detecta y te expulsa al login para mantener la seguridad.
 * **Protección contra borrado accidental:** En el panel de control de usuarios (`admin_users.php`), el sistema oculta el botón de eliminar de tu propia cuenta para que el administrador no se pueda borrar a sí mismo por error y dejar el sistema sin control.
 
+## 6. Funciones auxiliares y comportamiento del código (explicaciones detalladas)
+Aquí explicamos en lenguaje natural las funciones clave que aparecen en el código y su propósito, para que quien lea el proyecto entienda el flujo sin tener que inspeccionar siempre el código fuente.
+
+### 6.1 `config/database.php`
+- `getDatabaseConnection()` : Establece y devuelve una conexión PDO a la base de datos usando las constantes de configuración (`DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`). Configura opciones seguras de PDO (modo de error por excepciones, fetch asociativo por defecto y sin emulación de prepared statements). Al obtener la conexión, llama a `initializeDatabaseSchema()` para asegurarse de que las tablas necesarias existen. Si la conexión falla, detiene la ejecución con un mensaje claro.
+- `initializeDatabaseSchema(PDO $db)` : Crea las tablas principales si no existen: `users`, `events` y `reservations`. Describe las columnas más importantes y las relaciones:
+  - `users`: `id`, `name`, `email` (único), `password` (almacenada con `password_hash()`), `role` (`usuario` o `admin`), `created_at`.
+  - `events`: `id`, `title`, `description`, `venue`, `event_date`, `total_seats`, `available_seats`, `created_at`.
+  - `reservations`: `id`, `user_id`, `event_id`, `seats`, `reserved_at`. Tiene una restricción única por `(user_id, event_id)` para evitar duplicados y claves foráneas que eliminan en cascada cuando se borra un usuario o un evento.
+
+### 6.2 `js/authValidation.js` (validación del lado cliente)
+- `isValidEmail(email)` : Comprueba el formato del correo usando una expresión regular. Devuelve `true` si cumple el patrón básico de correo y `false` en caso contrario.
+- `isPasswordSecure(password)` : Valida que la contraseña tenga al menos `8` caracteres (`MIN_PASSWORD_LENGTH`). Si se quiere endurecer la política (mayúsculas, números, símbolos), aquí es el lugar indicado.
+- `handleRegisterSubmit(event)` : Handler que se asocia al formulario de registro (`registerForm`). Al enviar el formulario valida `email` y `password`, muestra mensajes de error en elementos con `id` `errorUserEmail` y `errorUserPassword` y evita el envío (`event.preventDefault()`) si hay errores. Es la primera línea de defensa antes de la validación en el servidor.
+
+### 6.3 `js/main.js` (toasts, modales y buscador)
+- `openDeleteModal(formId)` : Abre un modal de confirmación para eliminación. Almacena la referencia del formulario cuyo `id` se pasa como `formId` (se guardará en `currentFormToSubmit`) y añade la clase `isActive` al elemento `#deleteModal` para mostrarlo.
+- `closeDeleteModal()` : Cierra el modal eliminando la clase `isActive` y borra la referencia al formulario almacenado en `currentFormToSubmit`.
+- `executeDeletion()` : Si hay un formulario almacenado en `currentFormToSubmit`, lo envía con `.submit()`. Este método se llama desde el botón de confirmación dentro del modal (`confirmDeleteBtn`).
+- `showToast(message, type)` : Crea y muestra una notificación flotante (toast). `type` suele ser `'success'` o `'error'` y determina el icono y la clase CSS. Inserta el elemento en el `body`, aplica la animación de aparición y lo oculta automáticamente tras 4 segundos, eliminando finalmente el elemento del DOM.
+
+También en `main.js` se inicializan comportamientos al cargar la página (`DOMContentLoaded`):
+- El buscador en tiempo real (input con id `eventSearch`) filtra elementos con la clase `.event-card` comparando título y descripción.
+- La lectura de parámetros `error` o `success` en la URL para mostrar `toasts` cuando una acción del servidor redirige con mensajes (por ejemplo `?success=Reserva realizada`). Tras mostrar el toast, se limpia la URL con `history.replaceState()` para no volver a mostrar el mensaje al recargar.
+- El botón de confirmación de eliminación con id `confirmDeleteBtn` se enlaza para ejecutar `executeDeletion()`.
+
+---
+
